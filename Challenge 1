@@ -1,0 +1,72 @@
+//Jane Roe A5C1
+
+//Setting bubbles as variables
+let bubble1;
+let bubble2;
+let bubble3;
+let bubble4;
+let bubble5;
+
+function setup() {
+  createCanvas(400, 400);
+  angleMode(DEGREES);
+  //Changed the frame rate so that the bubble would float how I wanted
+  frameRate(30);
+
+  //Making the bubble variables equal to a new Bubble object
+  bubble1 = new Bubble();
+  bubble2 = new Bubble();
+  bubble3 = new Bubble();
+  bubble4 = new Bubble();
+  bubble5 = new Bubble();
+}
+
+function draw() {
+  background("skyblue");
+  //calling the move and show functions in the Bubble object for each bubble
+  bubble1.move();
+  bubble1.show();
+  bubble2.move();
+  bubble2.show();
+  bubble3.move();
+  bubble3.show();
+  bubble4.move();
+  bubble4.show();
+  bubble5.move();
+  bubble5.show();
+}
+
+class Bubble {
+  constructor() {
+    //setting x, y, and scale to be passed through each bubble
+    this.x = random(50, 350);
+    this.y = random(50, 350);
+    this.size = random(0.5, 1.4);
+  }
+  move() {
+    //making the bubble jitter
+    this.x = this.x + random(-0.5, 0.5);
+    this.y = this.y + random(-1.5, 1.5);
+  }
+  show() {
+    //drawing the bubble
+    push();
+    scale(this.size);
+    translate(this.x, this.y);
+    stroke("white");
+    strokeWeight(4);
+    noFill();
+    ellipse(0, 0, 40);
+    fill("hsla(240, 50%, 50%, .4)");
+    noStroke();
+    ellipse(0, 0, 42);
+    fill("hsla(210, 100%, 90%, .5)");
+    ellipse(10, 2, 3);
+    ellipse(7, 6, 3);
+    noFill();
+    strokeWeight(4);
+    stroke("hsla(210, 100%, 90%, .5)");
+    arc(0, 0, 30, 30, 20, 80);
+    pop();
+  }
+}
