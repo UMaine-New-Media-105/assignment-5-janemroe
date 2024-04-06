@@ -1,0 +1,55 @@
+//Jane Roe A5C2
+let bubbles = [];
+
+function setup() {
+  createCanvas(960, 540);
+  angleMode(DEGREES);
+  //Changed the frame rate so that the bubble would float how I wanted
+  frameRate(30);
+  //Loop so that a new bubble is added to the array until there's fifty
+  for (let i = 0; i < 50; i++)
+    bubbles[i] = {
+      //setting x, y, and scale to be passed through each bubble. Made them random so bubbles would appear in different positions.
+      x: random(50, 900),
+      y: random(50, 500),
+      size: random(0.8, 1.8),
+
+      move: function () {
+        //making the bubble jitter
+        this.x = this.x + random(-0.5, 0.5);
+        this.y = this.y + random(-1.5, 1.5);
+      },
+      show: function () {
+        //drawing the bubble
+        push();
+        //Bubble size
+        scale(this.size);
+        //Bubble position
+        translate(this.x, this.y);
+        stroke("white");
+        strokeWeight(4);
+        noFill();
+        ellipse(0, 0, 40);
+        fill("hsla(240, 50%, 50%, .4)");
+        noStroke();
+        ellipse(0, 0, 42);
+        fill("hsla(210, 100%, 90%, .5)");
+        ellipse(10, 2, 3);
+        ellipse(7, 6, 3);
+        noFill();
+        strokeWeight(4);
+        stroke("hsla(210, 100%, 90%, .5)");
+        arc(0, 0, 30, 30, 20, 80);
+        pop();
+      },
+    };
+}
+
+function draw() {
+  background("skyblue");
+  //Loop to draw every bubble in the array and move them.
+  for (let counter = 0; counter < bubbles.length; counter++) {
+    bubbles[counter].move();
+    bubbles[counter].show();
+  }
+}
