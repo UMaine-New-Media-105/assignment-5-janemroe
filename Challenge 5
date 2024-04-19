@@ -1,0 +1,231 @@
+//Jane Roe A5C5
+//Pool table simulation
+
+// Array to store spotlights
+let spotlights = [];
+let spotlightAmount = 25; //Amount of spolights
+let poolBallsAmount = 12; //Pool balls to start
+// Array to store pool balls
+let poolBalls = [];
+
+// Array of possible pool ball numbers
+let poolBallNumber = [1, 2, 3, 4, 5, 6, 7];
+
+// Array of possible pool ball colors
+let poolBallColor = [
+  "chartreuse",
+  "red",
+  "orange",
+  "gold",
+  "maroon",
+  "purple",
+  "indigo",
+  "orangered"
+];
+
+// Array of possible light colors
+let lightColor = [
+  "hsla(10, 80%, 50%, .3)",
+  "hsla(20, 80%, 50%, .3)",
+  "hsla(30, 80%, 50%, .3)",
+  "hsla(40, 80%, 50%, .3)",
+  "hsla(50, 80%, 50%, .3)",
+  "hsla(180, 80%, 50%, .3)",
+  "hsla(220, 100%, 50%, .3)",
+  "hsla(240, 100%, 50%, .3)",
+];
+
+//Class for the pool balls
+class PoolBall {
+  constructor(number, color, x, y) {
+    this.number = number;
+    this.color = color;
+    this.speed = 4;
+    this.size = 1;
+    this.x = x;
+    this.y = y;
+  }
+
+  move() {
+    this.x += this.speed; // Move horizontally
+    if (this.x < 0 || this.x >= width) {
+      this.speed *= -1;
+      this.y = random(45, 375); // Reverse direction if reaching canvas edges
+    }
+  }
+
+  show() {
+    push();
+    scale(this.size);
+    noStroke();
+    fill(this.color);
+    ellipse(this.x, this.y, 30); // Draw the ball at its x and y position
+    fill("white");
+    ellipse(this.x, this.y, 13); // Draw white circle on top
+    fill("black");
+    text(this.number, this.x - 3.5, this.y - 5, 20, 20);
+    pop();
+  }
+}
+// Class for the cue ball
+class cueBall {
+  constructor(x, y, speed) {
+    this.x = x;
+    this.y = y;
+    this.speed = speed;
+  }
+
+  // Function to display the cue ball
+  show() {
+    push();
+    fill("white");
+    ellipse(this.x, this.y, 25);
+    pop();
+  }
+
+  // Function to move the cue ball
+  move() {
+    this.x += this.speed; // Move horizontally
+    if (this.x < 0 || this.x >= width) {
+      this.speed *= -1; // Reverse direction if reaching canvas edges
+      this.y = random(55, 275);
+      
+    }
+  }
+}
+
+// Declare cue ball variables globally
+let cueBall1;
+let cueBall2
+
+function setup() {
+  createCanvas(400, 400);
+  angleMode(DEGREES);
+  breederWidth = 30;
+  poolBallX = 0;
+  spawnDelay = 20;
+  framesDelayed = 0;
+
+  // Generate spotlights
+  for (let c = 0; c < spotlightAmount; c++) {
+    spotlights[c] = {
+      x: random(0, 400),
+      y: random(0, 400),
+      size: random(0.8, 1.8),
+      light: random(lightColor),
+
+      move: function () {
+        this.x = this.x + random(-15, 15);
+        this.y = this.y + random(-15, 15);
+      },
+      show: function () {
+        push();
+        noStroke();
+        fill(this.light);
+        ellipse(this.x, this.y, 50);
+        pop();
+      },
+    };
+  }
+
+  // Generate pool balls
+  for (let i = 0; i < poolBallsAmount; i++) {
+    let ball = new PoolBall(
+      random(poolBallNumber),
+      random(poolBallColor),
+      random(45, 300),
+      random(45, 355)
+    );
+    poolBalls.push(ball);
+  }
+
+  // Create cue ball instance
+  cueBall1 = new cueBall(random(55, 325), random(55, 325), random(4));
+  cueBall2 = new cueBall(random(55, 325), random(55, 325), random(4));
+}
+
+function draw() {
+  background("darkgreen");
+  framesDelayed++;
+  for (
+    let breedersShown = 0;
+    breedersShown < poolBalls.length;
+    breedersShown++
+  ) {
+    let thisBreeder = poolBalls[breedersShown];
+
+    thisBreeder.show();
+    thisBreeder.move();
+    
+//Detecting collisions between pool balls and adding a new pool ball when detected
+    if (framesDelayed > spawnDelay) {
+      for (
+        let matesChecked = 0;
+        matesChecked < poolBalls.length;
+        matesChecked++
+      ) {
+        let proposedMate = poolBalls[matesChecked];
+        if (breedersShown !== matesChecked) {
+          let isDifferentBreeder = breedersShown !== matesChecked;
+          let distance = dist(
+            thisBreeder.x,
+            thisBreeder.y,
+            proposedMate.x,
+            proposedMate.y
+          );
+          if (isDifferentBreeder && isTouching(thisBreeder, proposedMate)) {
+            let x = random(width);
+            let y = random(45, 375);
+            let newBall = new PoolBall(
+              random(poolBallNumber),
+              random(poolBallColor),
+              x,
+              y
+            );
+            poolBalls.push(newBall);
+            framesDelayed = 0;
+            break;
+          }
+        }
+      }
+    }
+  }
+  //Collision detection function
+  function isTouching(sprite1, sprite2) {
+    let distance = dist(sprite1.x, sprite1.y, sprite2.x, sprite2.y);
+    if (distance < breederWidth) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+  // Draw pool table
+  push();
+  fill("brown");
+  rect(0, 0, 400, 30);
+  rect(0, 370, 400, 30);
+  pop();
+
+  // Show and move cue ball
+  cueBall2.show();
+  cueBall2.move();
+  cueBall1.show();
+  cueBall1.move();
+  //Detecting collision between cue ball and pool removing a pool ball from the array when detected
+  for (let breedersLeft = 0; breedersLeft < poolBalls.length; breedersLeft++) {
+    let proposedCatch = poolBalls[breedersLeft];
+    if (isTouching(cueBall1, proposedCatch)) {
+      poolBalls.splice(breedersLeft, 1);
+    }
+    if (isTouching(cueBall2, proposedCatch)) {
+      poolBalls.splice(breedersLeft, 1);
+      break;
+    }
+  }
+
+  // Show and move spotlights
+  for (let counters = 0; counters < spotlights.length; counters++) {
+    spotlights[counters].show();
+    spotlights[counters].move();
+  }
+}
